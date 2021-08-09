@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"> 
+
+<h:head>
+        <title>Matriculacion Vehicular</title>
+    </h:head>
+    <h:body>
+        <p:growl id="msg">
+            <p:autoUpdate/>
+        </p:growl>
+        <h:form>
+            <div align="center">
+                <p:panel header="Matriculacion Vehicular">
+                    <p:fieldset legend="Ingresar Nueva Matricula" toggleable="true" collapsed="true">
+                        <p:panelGrid columns="2">
+                            <h:outputText value="Seleccione el Cliente:"/>
+                            <p:selectOneMenu value="#{beanRevision.id_cliente}">
+                                <f:selectItems value="#{beanRevision.listaClientes}" var="cliente"
+                                               itemLabel="#{cliente.nombre} #{cliente.apellido}" itemValue="#{cliente.idCliente}"/>
+                            </p:selectOneMenu>
+                            <h:outputText value="Seleccione la Placa:"/>
+                            <p:selectOneMenu value="#{beanRevision.id_vehiculo}">
+                                <f:selectItems value="#{beanRevision.listaVehiculos}" var="vehiculo"
+                                               itemLabel="#{vehiculo.idVehiculo}" itemValue="#{vehiculo.idVehiculo}"/>
+                            </p:selectOneMenu>
+                            <h:outputText value="Año de revision"/>
+                            <p:datePicker value="#{beanRevision.anio_revision}"/>
+                            <h:outputText value="Observaciones:"/>
+                            <p:inputTextarea rows="5" cols="30" maxlength="100" placeholder="Observaciones..." value="#{beanRevision.observaciones}"
+                                             counterTemplate="{0} characters remaining." autoResize="false"/>
+
+                        </p:panelGrid>
+                        <br></br>
+                        <p:selectBooleanCheckbox value="#{beanRevision.paso_revision}" itemLabel="Paso la reision vehicular?">
+                            <p:ajax update="msg" listener="#{beanRevision.addMessage()}"/>
+                        </p:selectBooleanCheckbox>
+
+
+                        <p:fieldset legend="Detalles de la revision" toggleable="false" collapsed="false">
+
+                            <p:panelGrid columns="2">
+                                <h:outputText value="Seleccione una caracteristica:"/>
+                                <p:selectOneMenu value="#{beanRevision.id_caracteristica}">
+                                    <f:selectItems value="#{beanRevision.listaCaracteristicas}" var="caracteristica"
+                                                   itemLabel="#{caracteristica.nombreCaracteristica}" itemValue="#{caracteristica.idCaracteristica}"/>
+                                </p:selectOneMenu>
+                                <h:outputText value="Puntaje:"/>
+                                <p:spinner id="step" value="#{beanRevision.puntaje}" stepFactor="0.25" min="0" max="10"/>
+
+                            </p:panelGrid>
+                            <br></br>
+                            <p:commandButton value="Agregar Puntaje" actionListener="#{beanRevision.actionListenerAgregarPuntaje()}" update="@form"
+                                             icon="fa fa-save"/>
+                            <br></br>
+                            <br></br>
+                            <p:panel header="Listado de Vehiculos revisados">
+                                <p:dataTable value="#{beanRevision.lista}" var="lista">
+                                    <p:column headerText="Caracterisitica" >
+                                        <h:outputText value="#{lista.caracteristica.nombreCaracteristica}"/>
+                                    </p:column>
+                                    <p:column headerText="Puntaje" >
+                                        <h:outputText value="#{lista.puntaje}"/>
+                                    </p:column>
+                                    <p:column headerText="Opciones" >
+                                            <p:commandButton value="Eliminar" icon="fa fa-trash" styleClass="ui-button-danger" title="Eliminar" actionListener="#{beanRevision.actionListenerEliminarPuntaje(lista.idPuntaje)}" update="@form">
+                                                <p:confirm header="Confirmación " message="¿Está seguro de eliminar el puntaje?" icon="pi pi-info-circle"/>
+                                            </p:commandButton>
+                                            <p:confirmDialog global="true" showEffect="explode" hideEffect="explode" responsive="false" width="350">
+                                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check"/>
+                                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat" icon="fa fa-close"/>
+                                            </p:confirmDialog>
+                                    </p:column>
+
+                                </p:dataTable>
+                            </p:panel>
+
+                        </p:fieldset>
+                        <br></br><!-- comment -->
+                        <br></br>
+                        <p:commandButton value="Guardar Matricula" actionListener="#{beanRevision.actionListenerGuardarMatricula()}" update=":form1,@form"
+                                         icon="fa fa-save"/>
+                    </p:fieldset>
+                </p:panel>
+            </div>
+        </h:form>
+        <h:form id="form1">
+            <div>
+                <p:panel header="Listado de Vehiculos revisados">
+                    <p:dataTable value="#{beanRevision.listaRevisiones}" var="revision">
+                        <p:column headerText="ID" >
+                            <h:outputText value="#{revision.idRevision}"/>
+                        </p:column>
+                        <p:column headerText="Cliente" >
+                            <h:outputText value="#{revision.clientes.nombre} #{revision.clientes.apellido}"/>
+                        </p:column>
+                        <p:column headerText="Automovil" >
+                            <h:outputText value="#{revision.vehiculo.idVehiculo}"/>
+                        </p:column>
+                        <p:column headerText="Año" >
+                            <h:outputText value="#{revision.anioRevision}">
+
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Observaciones" >
+                            <h:outputText value="#{revision.observaciones}"/>
+                        </p:column>
+                        <p:column headerText="Puntaje de Revision?" >
+                            <h:outputText value="#{revision.puntaje}"/>
+                        </p:column>
+                        <p:column headerText="Paso la Revision?" >
+                            <h:outputText value="#{revision.pasoRevision}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+            </div>
+        </h:form>
+    </h:body>
+</html>
